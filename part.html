@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+        body{
+            background-color: red;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const particles = [];
+        const numParticles = 100;
+        const particleSize = 2;
+        const gravity = 0.05;
+        const friction = 0.99;
+
+        function Particle(x, y) {
+            this.x = x;
+            this.y = y;
+            this.vx = Math.random() * 2 - 1;
+            this.vy = Math.random() * 2 - 1;
+            this.color = `rgba(0, 0, 255, ${Math.random()})`;
+        }
+
+        Particle.prototype.update = function() {
+            this.vy += gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vx *= friction;
+            this.vy *= friction;
+
+            if (this.y > canvas.height) {
+                this.y = canvas.height;
+                this.vy = -this.vy;
+            }
+
+            if (this.x > canvas.width || this.x < 0) {
+                this.x = Math.max(0, Math.min(canvas.width, this.x));
+                this.vx = -this.vx;
+            }
+        };
+
+        Particle.prototype.draw = function() {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, particleSize, particleSize);
+        };
+
+        function createParticles() {
+            for (let i = 0; i < numParticles; i++) {
+                particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height));
+            }
+        }
+
+        function updateParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].update();
+            }
+        }
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particles.length; i++) {
+                particles[i].draw();
+            }
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 255, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            updateParticles();
+            drawParticles();
+            requestAnimationFrame(animate);
+        }
+
+        createParticles();
+        animate();
+    </script>
+</body>
+</html>

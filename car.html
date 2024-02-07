@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self Driving Car Game</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const car = {
+            x: 100,
+            y: 300,
+            width: 50,
+            height: 30,
+            speed: 5,
+            color: 'blue',
+        };
+
+        const path = [
+            { x: 100, y: 300 },
+            { x: 300, y: 300 },
+            { x: 500, y: 200 },
+            { x: 700, y: 300 },
+        ];
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw car
+            ctx.fillStyle = car.color;
+            ctx.fillRect(car.x, car.y, car.width, car.height);
+
+            // Draw path
+            ctx.strokeStyle = 'black';
+            ctx.beginPath();
+            path.forEach((point, index) => {
+                if (index === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            });
+            ctx.stroke();
+
+            // Update car position
+            const targetPoint = path[0];
+            const dx = targetPoint.x - car.x;
+            const dy = targetPoint.y - car.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > car.speed) {
+                car.x += dx / distance * car.speed;
+                car.y += dy / distance * car.speed;
+            } else {
+                path.shift();
+            }
+
+            requestAnimationFrame(draw);
+        }
+
+        draw();
+    </script>
+</body>
+</html>
